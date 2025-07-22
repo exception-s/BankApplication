@@ -1,6 +1,7 @@
 package com.BankApp.localbankapp.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.math.BigDecimal;
 
@@ -8,6 +9,7 @@ import java.math.BigDecimal;
  * @author Alexander Brazhkin
  */
 @Data
+@AllArgsConstructor
 public class TransactionDTO {
 
     @NotBlank(message = "Id of the account from which the transfer is being made cannot be empty")
