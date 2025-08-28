@@ -1,6 +1,7 @@
 package com.BankApp.localbankapp.service.impl;
 
 import com.BankApp.localbankapp.dto.TransactionDTO;
+import com.BankApp.localbankapp.exception.AccountNotFoundException;
 import com.BankApp.localbankapp.mapper.TransactionMapper;
 import com.BankApp.localbankapp.model.BankAccount;
 import com.BankApp.localbankapp.model.Transaction;
@@ -12,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * @author Alexander Brazhkin
@@ -20,15 +20,16 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
-    private final AccountRepository accountRepo;
-    private final TransactionRepository transactionRepo;
+    // todo (from 2025-08-27, 17:45): currency processing
+    private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
 
     @Transactional
     public Transaction transfer(Long fromId, Long toId, BigDecimal amount) {
-        BankAccount from = accountRepo.findById(fromId)
-                                      .orElseThrow(() -> new RuntimeException("Source account not found"));
-        BankAccount to = accountRepo.findById(toId)
-                                    .orElseThrow(() -> new RuntimeException("Target account not found"));
+        BankAccount from = accountRepository.findById(fromId)
+                                            .orElseThrow(() -> new AccountNotFoundException("Source account not found"));
+        BankAccount to = accountRepository.findById(toId)
+                                          .orElseThrow(() -> new AccountNotFoundException("Target account not found"));
 
         if (from.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Insufficient funds");
@@ -45,6 +46,6 @@ public class TransactionServiceImpl implements TransactionService {
                 "Transfer"
         );
 
-        return transactionRepo.save(tx);
+        return transactionRepository.save(tx);
     }
 }

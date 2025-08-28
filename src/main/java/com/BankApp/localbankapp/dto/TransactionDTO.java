@@ -1,8 +1,11 @@
 package com.BankApp.localbankapp.dto;
 
+import com.BankApp.localbankapp.model.Currency;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+
 import java.math.BigDecimal;
 
 /**
@@ -10,7 +13,7 @@ import java.math.BigDecimal;
  */
 @Data
 @AllArgsConstructor
-public class TransactionDTO {
+public class TransactionDTO {  // todo (from 2025-08-27, 17:45): add currency
 
     @NotBlank(message = "Id of the account from which the transfer is being made cannot be empty")
     private Long fromAccountId;

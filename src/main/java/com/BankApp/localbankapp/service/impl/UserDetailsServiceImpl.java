@@ -37,13 +37,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional
     public User updateUser(Long id, User updatedUser) {
         User existing = getUserById(id);
+        existing.setUsername(updatedUser.getUsername());
+        existing.setPassword(updatedUser.getPassword());
         existing.setEmail(updatedUser.getEmail());
         // Пароль должен обновляться отдельно с хешированием
         return userRepository.save(existing);
     }
 
     public CustomUserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByUsername(username) // Специальный метод
+        User user = userRepository.findByUsername(username)
                                   .orElseThrow(() -> new AccountNotFoundException(username)
         );
 
