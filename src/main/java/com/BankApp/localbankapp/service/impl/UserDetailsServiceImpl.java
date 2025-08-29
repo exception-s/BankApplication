@@ -46,14 +46,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public CustomUserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                                  .orElseThrow(() -> new AccountNotFoundException(username)
-        );
+                                  .orElseThrow(() -> new AccountNotFoundException(username));
 
         List<GrantedAuthority> authorities = user.getRoles()
                                                  .stream()
                                                  .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
-                                                 .collect(Collectors.toList()
-        );
+                                                 .collect(Collectors.toList());
 
         return new CustomUserDetails(user, authorities);
     }

@@ -1,11 +1,13 @@
 package com.BankApp.localbankapp.service;
 
+import com.BankApp.localbankapp.dto.TransactionDTO;
 import com.BankApp.localbankapp.model.Transaction;
-import java.math.BigDecimal;
 
 /**
  * @author Alexander Brazhkin
  */
 public interface TransactionService {
-    Transaction transfer(Long fromId, Long toId, BigDecimal amount);
+    Transaction transfer(TransactionDTO dto);
+    Transaction deposit(TransactionDTO dto);
+    Transaction withdrawal(TransactionDTO dto);
 }

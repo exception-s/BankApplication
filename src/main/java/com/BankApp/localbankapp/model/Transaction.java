@@ -41,4 +41,10 @@ public class Transaction {
 
     @Column(nullable = false)
     private LocalDateTime timestamp = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
+    private Currency fromCurrency;
+
+    @Enumerated(EnumType.STRING)
+    private Currency toCurrency;
 }

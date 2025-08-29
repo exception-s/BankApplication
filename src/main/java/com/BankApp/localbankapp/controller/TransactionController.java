@@ -25,11 +25,21 @@ public class TransactionController {
     @Operation(summary = "Выполнить перевод между счетами")
     @PostMapping("/transfer")
     public ResponseEntity<Transaction> transfer(@RequestBody TransactionDTO dto) {
-        Transaction transaction = transactionService.transfer(
-                dto.getFromAccountId(),
-                dto.getToAccountId(),
-                dto.getAmount()
-        );
+        Transaction transaction = transactionService.transfer(dto);
+        return ResponseEntity.ok(transaction);
+    }
+
+    @Operation(summary = "Пополнить счёт")
+    @PostMapping("/deposit")
+    public ResponseEntity<Transaction> deposit(@RequestBody TransactionDTO dto) {
+        Transaction transaction = transactionService.deposit(dto);
+        return ResponseEntity.ok(transaction);
+    }
+
+    @Operation(summary = "Пополнить счёт")
+    @PostMapping("/deposit")
+    public ResponseEntity<Transaction> withdraw(@RequestBody TransactionDTO dto) {
+        Transaction transaction = transactionService.withdrawal(dto);
         return ResponseEntity.ok(transaction);
     }
 }

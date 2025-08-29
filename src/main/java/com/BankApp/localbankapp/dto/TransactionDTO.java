@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  */
 @Data
 @AllArgsConstructor
-public class TransactionDTO {  // todo (from 2025-08-27, 17:45): add currency
+public class TransactionDTO {
 
     @NotBlank(message = "Id of the account from which the transfer is being made cannot be empty")
     private Long fromAccountId;
@@ -23,4 +23,10 @@ public class TransactionDTO {  // todo (from 2025-08-27, 17:45): add currency
 
     @NotBlank(message = "An amount field cannot be empty(if amount is equal to zero, add 0")
     private BigDecimal amount;
+
+    @NotBlank(message = "Currency cannot be unfilled")
+    private Currency fromCurrency;
+
+    @NotBlank(message = "Currency cannot be unfilled")
+    private Currency toCurrency;
 }

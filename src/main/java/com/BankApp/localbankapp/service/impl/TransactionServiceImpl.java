@@ -4,6 +4,7 @@ import com.BankApp.localbankapp.dto.TransactionDTO;
 import com.BankApp.localbankapp.exception.AccountNotFoundException;
 import com.BankApp.localbankapp.mapper.TransactionMapper;
 import com.BankApp.localbankapp.model.BankAccount;
+import com.BankApp.localbankapp.model.Currency;
 import com.BankApp.localbankapp.model.Transaction;
 import com.BankApp.localbankapp.model.TransactionType;
 import com.BankApp.localbankapp.repository.AccountRepository;
@@ -20,12 +21,16 @@ import java.math.BigDecimal;
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
-    // todo (from 2025-08-27, 17:45): currency processing
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
     @Transactional
-    public Transaction transfer(Long fromId, Long toId, BigDecimal amount) {
+    public Transaction transfer(TransactionDTO dto) {
+        long fromId = dto.getFromAccountId();
+        long toId = dto.getToAccountId();
+        BigDecimal amount = dto.getAmount();
+        Currency fromCurrency = dto.getFromCurrency();
+        Currency toCurrency = dto.getToCurrency();
         BankAccount from = accountRepository.findById(fromId)
                                             .orElseThrow(() -> new AccountNotFoundException("Source account not found"));
         BankAccount to = accountRepository.findById(toId)
@@ -39,7 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
         to.setBalance(to.getBalance().add(amount));
 
         Transaction tx = TransactionMapper.toEntity(
-                new TransactionDTO(fromId, toId, amount),
+                new TransactionDTO(fromId, toId, amount, fromCurrency, toCurrency),
                 from,
                 to,
                 TransactionType.TRANSFER,
@@ -47,5 +52,27 @@ public class TransactionServiceImpl implements TransactionService {
         );
 
         return transactionRepository.save(tx);
+    }
+
+    @Transactional
+    public Transaction deposit(TransactionDTO dto) {
+        // todo (from 2025-08-29, 16:59): implement functionality
+        long fromId = dto.getFromAccountId();
+        long toId = dto.getToAccountId();
+        BigDecimal amount = dto.getAmount();
+        Currency fromCurrency = dto.getFromCurrency();
+        Currency toCurrency = dto.getToCurrency();
+        return null;
+    }
+
+    @Transactional
+    public Transaction withdrawal(TransactionDTO dto) {
+        // todo (from 2025-08-29, 16:59): implement functionality
+        long fromId = dto.getFromAccountId();
+        long toId = dto.getToAccountId();
+        BigDecimal amount = dto.getAmount();
+        Currency fromCurrency = dto.getFromCurrency();
+        Currency toCurrency = dto.getToCurrency();
+        return null;
     }
 }

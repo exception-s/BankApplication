@@ -31,6 +31,17 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            throw new IllegalArgumentException("Authentication cannot be null or empty");
+        }
+
+        if (jwtSecret == null || jwtSecret.trim().isEmpty()) {
+            throw new IllegalStateException("JWT secret is not configured");
+        }
+
+        if (jwtExpirationMs <= 0) {
+            throw new IllegalStateException("JWT expiration must be positive");
+        }
         String username = authentication.getName();
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
@@ -44,6 +55,9 @@ public class JwtTokenProvider {
     }
 
     public String getUsernameFromJWT(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new IllegalArgumentException("Token cannot be null or empty");
+        }
         return Jwts.parser()
                    .verifyWith((SecretKey) getSigningKey())
                    .build()
@@ -53,6 +67,9 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String authToken) {
+        if (authToken == null || authToken.trim().isEmpty()) {
+            return false;
+        }
         try {
             Jwts.parser()
                 .verifyWith((SecretKey) getSigningKey())
