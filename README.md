@@ -52,8 +52,8 @@
 ### Запуск через Docker Compose:
 ```bash
 # Клонирование репозитория
-git clone https://github.com/exception-s/local-bank-app.git
-cd local-bank-app
+git clone https://github.com/exception-s/BankApplication.git
+cd BankApplication
 
 # Запуск приложения с базой данных
 docker-compose up --build
