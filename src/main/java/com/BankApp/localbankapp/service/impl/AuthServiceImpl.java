@@ -1,9 +1,9 @@
 package com.BankApp.localbankapp.service.impl;
 
 import com.BankApp.localbankapp.dto.AuthRequest;
+import com.BankApp.localbankapp.exception.EmailNotFoundException;
 import com.BankApp.localbankapp.mapper.UserMapper;
 import com.BankApp.localbankapp.model.User;
-import com.BankApp.localbankapp.model.UserRole;
 import com.BankApp.localbankapp.repository.UserRepository;
 import com.BankApp.localbankapp.security.JwtTokenProvider;
 import com.BankApp.localbankapp.service.AuthService;
@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,11 +33,14 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public User registerUser(AuthRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username is already taken");
+            throw new UsernameNotFoundException("Username is already taken");
         }
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email is already in use");
+            throw new EmailNotFoundException("Email is already in use");
+        }
+        if (request.getUsername().isEmpty() || request.getPassword().isEmpty()) {
+            throw new UsernameNotFoundException("Username or password is empty");
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());

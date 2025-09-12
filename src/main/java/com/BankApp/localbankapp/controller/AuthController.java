@@ -30,8 +30,8 @@ public class AuthController {
     }
 
     @Operation(summary = "Аутентификация и получение JWT токена")
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequest request) {
+    @PostMapping("/authenticate")
+    public ResponseEntity<String> authenticate(@RequestBody AuthRequest request) {
         String token = authService.authenticateUser(request);
         return ResponseEntity.ok(token);
     }

@@ -18,7 +18,7 @@ import java.util.Date;
 @Component
 @PropertySource("classpath:application.properties")
 public class JwtTokenProvider {
-    private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);     // todo (from 2025-07-22, 11:11): validate JWT work
+    private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     @Value("${app.jwtSecret}")
     private String jwtSecret;

@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @PropertySource("classpath:application.yml")
 @EnableJpaRepositories(basePackages = "com.BankApp.localbankapp.repository")
-public class LocalBankAppApplication {
+public class LocalBankApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(LocalBankAppApplication.class, args);
+		SpringApplication.run(LocalBankApplication.class, args);
 	}
 }

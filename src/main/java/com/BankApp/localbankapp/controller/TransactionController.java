@@ -37,7 +37,7 @@ public class TransactionController {
     }
 
     @Operation(summary = "Пополнить счёт")
-    @PostMapping("/deposit")
+    @PostMapping("/withdraw")
     public ResponseEntity<Transaction> withdraw(@RequestBody TransactionDTO dto) {
         Transaction transaction = transactionService.withdrawal(dto);
         return ResponseEntity.ok(transaction);

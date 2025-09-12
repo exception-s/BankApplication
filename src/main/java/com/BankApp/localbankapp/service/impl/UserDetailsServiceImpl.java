@@ -1,14 +1,14 @@
 package com.BankApp.localbankapp.service.impl;
 
-import com.BankApp.localbankapp.exception.AccountNotFoundException;
 import com.BankApp.localbankapp.model.User;
 import com.BankApp.localbankapp.repository.UserRepository;
 import com.BankApp.localbankapp.security.CustomUserDetails;
 import com.BankApp.localbankapp.service.UserDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional(readOnly = true)
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                             .orElseThrow(() -> new AccountNotFoundException(id));
+                .orElseThrow(() -> new EmptyResultDataAccessException("User not found with id: " + id, 1));
     }
 
     @Transactional(readOnly = true)
@@ -46,7 +46,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public CustomUserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                                  .orElseThrow(() -> new AccountNotFoundException(username));
+                .orElseThrow(() -> new UsernameNotFoundException("Username is already taken"));
 
         List<GrantedAuthority> authorities = user.getRoles()
                                                  .stream()
