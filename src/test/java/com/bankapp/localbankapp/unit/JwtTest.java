@@ -2,7 +2,7 @@ package com.bankapp.localbankapp.unit;
 
 import com.BankApp.localbankapp.security.JwtAuthFilter;
 import com.BankApp.localbankapp.security.JwtTokenProvider;
-import com.BankApp.localbankapp.service.UserDetailsService;
+import com.BankApp.localbankapp.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.*;
@@ -41,7 +41,7 @@ public class JwtTest {
         private JwtTokenProvider tokenProvider;
 
         @Mock
-        private UserDetailsService userService;
+        private UserService userService;
 
         @Mock
         private FilterChain filterChain;

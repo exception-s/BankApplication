@@ -8,12 +8,12 @@ import com.BankApp.localbankapp.model.*;
 import com.BankApp.localbankapp.repository.AccountRepository;
 import com.BankApp.localbankapp.repository.TransactionRepository;
 import com.BankApp.localbankapp.repository.UserRepository;
-import com.BankApp.localbankapp.security.CustomUserDetails;
+import com.BankApp.localbankapp.service.impl.UserDetailsImpl;
 import com.BankApp.localbankapp.security.JwtTokenProvider;
 import com.BankApp.localbankapp.service.impl.AccountServiceImpl;
 import com.BankApp.localbankapp.service.impl.AuthServiceImpl;
 import com.BankApp.localbankapp.service.impl.TransactionServiceImpl;
-import com.BankApp.localbankapp.service.impl.UserDetailsServiceImpl;
+import com.BankApp.localbankapp.service.impl.UserServiceImpl;
 import com.BankApp.localbankapp.util.CurrencyConverter;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +26,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
@@ -430,7 +431,6 @@ public class ServiceTest {
             Transaction result = transactionService.transfer(transactionDTO);
             assertNotNull(result);
             assertEquals(TransactionType.TRANSFER, result.getType());
-            System.out.println(usdAccount.getBalance());
             assertEquals(0, BigDecimal.valueOf(900).compareTo(usdAccount.getBalance())); // 1000 - 100
             assertEquals(0, BigDecimal.valueOf(585).compareTo(eurAccount.getBalance())); // 500 + 85
             assertEquals(Currency.USD, result.getFromCurrency());
@@ -600,7 +600,7 @@ public class ServiceTest {
         private UserRepository userRepository;
 
         @InjectMocks
-        private UserDetailsServiceImpl userService;
+        private UserServiceImpl userService;
         private User testUser;
 
         @BeforeEach
@@ -680,7 +680,7 @@ public class ServiceTest {
         void loadUserByUsernameSuccess() {
             when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
 
-            CustomUserDetails user = userService.loadUserByUsername(testUser.getUsername());
+            UserDetails user = userService.loadUserByUsername(testUser.getUsername());
             assertNotNull(user);
             assertEquals(testUser.getUsername(), user.getUsername());
             assertEquals(testUser.getPassword(), user.getPassword());
