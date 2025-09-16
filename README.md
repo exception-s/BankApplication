@@ -104,6 +104,7 @@ curl -X POST "http://localhost:8080/api/accounts" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
   -H "Content-Type: application/json" \
   -d '{
+    "userId": "1",
     "currency": "USD"
   }'
 ```
@@ -123,7 +124,9 @@ curl -X POST "http://localhost:8080/api/transactions/transfer" \
     "fromAccountId": 1,
     "toAccountId": 2,
     "amount": 150.50,
-    "description": "Payment for services"
+    "description": "Payment for services",
+    "fromCurrency": "USD",
+    "toCurrency": "USD"
   }'
 ```
 

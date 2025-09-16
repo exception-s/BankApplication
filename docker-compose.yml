@@ -6,8 +6,8 @@ services:
     container_name: bank-postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: local_bank_db
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: localbank_db
     ports:
       - "5432:5432"
     volumes:
@@ -26,6 +26,6 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/local_bank_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/localbank_db
       SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_PASSWORD: pass

@@ -2,7 +2,6 @@ package com.BankApp.localbankapp.service.impl;
 
 import com.BankApp.localbankapp.model.User;
 import com.BankApp.localbankapp.repository.UserRepository;
-import com.BankApp.localbankapp.security.CustomUserDetails;
 import com.BankApp.localbankapp.service.UserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -44,7 +43,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return userRepository.save(existing);
     }
 
-    public CustomUserDetails loadUserByUsername(String username) {
+    public UserDetailsImpl loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Username is already taken"));
 
@@ -53,6 +52,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                                  .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                                                  .collect(Collectors.toList());
 
-        return new CustomUserDetails(user, authorities);
+        return new UserDetailsImpl(user, authorities);
     }
 }

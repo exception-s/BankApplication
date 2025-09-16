@@ -1,5 +1,5 @@
-CREATE DATABASE local_bank_db;
-\c local_bank_db;
+CREATE DATABASE localbank_db;
+\c localbank_db;
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS transactions (
     to_account_id INT NOT NULL,
     amount DECIMAL(15,2) NOT NULL,
     type VARCHAR(20) NOT NULL,
+    from_currency VARCHAR,
+    to_currency VARCHAR,
     description TEXT,
     transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (from_account_id) REFERENCES bank_accounts(id) ON DELETE SET NULL,
