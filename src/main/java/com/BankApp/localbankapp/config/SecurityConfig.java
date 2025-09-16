@@ -48,7 +48,6 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/index.html",
-                                "/public/**",
                                 "/api/auth/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
@@ -91,80 +90,29 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("*"));
-        configuration.setAllowedHeaders(List.of("*"));
+
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:3000",
+                "http://localhost:8080"
+        ));
+
+        configuration.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
+        ));
+
+        configuration.setAllowedHeaders(List.of(
+                "Authorization", "Content-Type", "X-Requested-With", "Accept"
+        ));
+
+        configuration.setExposedHeaders(List.of(
+                "Authorization", "Content-Type"
+        ));
+
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }
-
-
-
-//@Configuration
-//@EnableWebSecurity
-//public class SecurityConfig {           // todo (from 2025-07-22, 11:8): fix swagger
-//    private final JwtAuthFilter jwtAuthFilter;
-//
-//    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
-//        this.jwtAuthFilter = jwtAuthFilter;
-//    }
-//
-////    @Bean
-////    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-////        http.csrf(AbstractHttpConfigurer::disable)
-////            .sessionManagement(session -> session
-////                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-////                        .authorizeHttpRequests(auth -> auth
-////                                            .requestMatchers("/api/admin/**").hasRole("ADMIN")
-////                                            .requestMatchers("/api/manager/**").hasAnyRole("ADMIN", "MANAGER")
-////                                            .requestMatchers("/api/auth/**").permitAll()
-////                                            .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-////                                            .anyRequest()
-////                                            .authenticated()
-////                        )
-////            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-////
-////        return http.build();
-////    }
-//
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf(AbstractHttpConfigurer::disable)
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(
-//                                "/",
-//                                "/index.html",
-//                                "/public/**",
-//                                "/api/auth/**",
-//                                "/swagger-ui.html",
-//                                "/swagger-ui/**",
-//                                "/swagger-resources/**",
-//                                "/v3/api-docs/**",
-//                                "/webjars/**",
-//                                "/api/auth/**"
-//                        ).permitAll()
-//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-//                        .anyRequest().authenticated()
-//                )
-//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-//    }
-//
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-//
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-//            throws Exception
-//    {
-//        return authenticationConfiguration.getAuthenticationManager();
-//    }
-//}

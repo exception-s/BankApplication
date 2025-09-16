@@ -13,6 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -21,7 +22,6 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
-
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
 
@@ -42,6 +42,13 @@ public class AccountServiceImpl implements AccountService {
     public BankAccount getAccountById(Long id) {
         return accountRepository.findById(id)
                 .orElseThrow(() -> new EmptyResultDataAccessException("Account not found with id: " + id, 1));
+    }
+
+    @Transactional(readOnly = true)
+    public BigDecimal getBalanceById(Long id) {
+        BankAccount account = accountRepository.findById(id)
+                .orElseThrow(() -> new EmptyResultDataAccessException("Account not found with id: " + id, 1));
+        return account.getBalance();
     }
 
     private String generateAccountNumber() {
