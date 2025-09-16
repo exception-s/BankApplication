@@ -2,7 +2,6 @@ package com.bankapp.localbankapp.unit;
 
 import com.BankApp.localbankapp.util.CurrencyConverter;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

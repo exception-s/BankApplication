@@ -83,7 +83,7 @@ public class ControllerTest {
             mockMvc.perform(post("/api/accounts")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(accountDTO)))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").value(1))
                     .andExpect(jsonPath("$.accountNumber").value("ACC_0001"))
                     .andExpect(jsonPath("$.currency").value("USD"));
@@ -96,7 +96,7 @@ public class ControllerTest {
             MvcResult result = mockMvc.perform(post("/api/accounts")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(invalidDTO)))
-                    .andExpect(status().isOk()).andReturn();
+                    .andExpect(status().isCreated()).andReturn();
 
             Optional<NullPointerException> ex = Optional.ofNullable((NullPointerException) result.getResolvedException());
             ex.ifPresent(e -> assertEquals(e.getClass(), NullPointerException.class));

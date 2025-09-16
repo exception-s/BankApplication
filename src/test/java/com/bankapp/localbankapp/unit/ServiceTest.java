@@ -8,7 +8,6 @@ import com.BankApp.localbankapp.model.*;
 import com.BankApp.localbankapp.repository.AccountRepository;
 import com.BankApp.localbankapp.repository.TransactionRepository;
 import com.BankApp.localbankapp.repository.UserRepository;
-import com.BankApp.localbankapp.service.impl.UserDetailsImpl;
 import com.BankApp.localbankapp.security.JwtTokenProvider;
 import com.BankApp.localbankapp.service.impl.AccountServiceImpl;
 import com.BankApp.localbankapp.service.impl.AuthServiceImpl;

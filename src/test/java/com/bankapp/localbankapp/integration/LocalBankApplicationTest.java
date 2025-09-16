@@ -1,15 +1,12 @@
 package com.bankapp.localbankapp.integration;
 
-import com.BankApp.localbankapp.model.BankAccount;
+import com.BankApp.localbankapp.dto.TransactionDTO;
 import com.BankApp.localbankapp.model.Currency;
 import com.BankApp.localbankapp.model.User;
-import com.BankApp.localbankapp.model.UserRole;
 import com.BankApp.localbankapp.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +19,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.http.*;
+import java.math.BigDecimal;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -91,7 +89,7 @@ class LocalBankApplicationTest {
 						.content("""
 								{"userId":"1","currency":"USD"}
 								"""))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andReturn();
 
 		JsonNode accountNode = objectMapper.readTree(accountResult.getResponse().getContentAsString());
@@ -102,17 +100,40 @@ class LocalBankApplicationTest {
 				.andExpect(status().isOk())
 				.andExpect(content().string("0.00"));
 
+		TransactionDTO deposit = new TransactionDTO(
+				null,
+				accountId,
+				BigDecimal.valueOf(1000.00),
+				Currency.USD,
+				Currency.USD
+		);
 		mockMvc.perform(post("/api/transactions/deposit")
 						.header("Authorization", "Bearer " + token)
 						.contentType(MediaType.APPLICATION_JSON)
-						.content("{\"accountId\": " + accountId + ", \"amount\": 1000.00}"))
-				.andExpect(status().isCreated());
+						.content(objectMapper.writeValueAsString(deposit)))
+				.andExpect(status().isOk());
 
 		mockMvc.perform(get("/api/accounts/" + accountId + "/balance")
 						.header("Authorization", "Bearer " + token))
 				.andExpect(status().isOk())
 				.andExpect(content().string("1000.00"));
 
-		// todo (from 2025-09-16, 9:30): withdraw
+		TransactionDTO withdraw = new TransactionDTO(
+				accountId,
+				null,
+				BigDecimal.valueOf(500.00),
+				Currency.USD,
+				Currency.USD
+		);
+		mockMvc.perform(post("/api/transactions/withdraw")
+						.header("Authorization", "Bearer " + token)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(withdraw)))
+				.andExpect(status().isOk());
+
+		mockMvc.perform(get("/api/accounts/" + accountId + "/balance")
+						.header("Authorization", "Bearer " + token))
+				.andExpect(status().isOk())
+				.andExpect(content().string("500.00"));
 	}
 }
