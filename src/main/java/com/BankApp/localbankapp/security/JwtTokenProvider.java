@@ -9,6 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -16,7 +17,7 @@ import java.util.Date;
  * @author Alexander Brazhkin
  */
 @Component
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application.yml")
 public class JwtTokenProvider {
     private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
 
@@ -26,8 +27,8 @@ public class JwtTokenProvider {
     @Value("${app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(Authentication authentication) {
@@ -59,7 +60,7 @@ public class JwtTokenProvider {
             throw new IllegalArgumentException("Token cannot be null or empty");
         }
         return Jwts.parser()
-                   .verifyWith((SecretKey) getSigningKey())
+                   .verifyWith(getSigningKey())
                    .build()
                    .parseSignedClaims(token)
                    .getPayload()
@@ -72,7 +73,7 @@ public class JwtTokenProvider {
         }
         try {
             Jwts.parser()
-                .verifyWith((SecretKey) getSigningKey())
+                .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(authToken);
             return true;

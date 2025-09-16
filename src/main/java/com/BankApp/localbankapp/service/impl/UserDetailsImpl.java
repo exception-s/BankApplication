@@ -1,10 +1,13 @@
-package com.BankApp.localbankapp.security;
+package com.BankApp.localbankapp.service.impl;
 
 import com.BankApp.localbankapp.model.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,13 +15,13 @@ import java.util.stream.Collectors;
 /**
  * @author Alexander Brazhkin
  */
-public class CustomUserDetails implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
     @Getter
     private final User user;
     private final List<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(User user) {
+    public UserDetailsImpl(User user) {
         this.user = user;
         this.authorities = user.getRoles()
                                .stream()
@@ -26,7 +29,7 @@ public class CustomUserDetails implements UserDetails {
                                .collect(Collectors.toList());
     }
 
-    public CustomUserDetails(User user, List<GrantedAuthority> authorities) {
+    public UserDetailsImpl(User user, List<GrantedAuthority> authorities) {
         this.user = user;
         this.authorities = authorities;
     }

@@ -2,11 +2,13 @@ package com.BankApp.localbankapp.service.impl;
 
 import com.BankApp.localbankapp.model.User;
 import com.BankApp.localbankapp.repository.UserRepository;
-import com.BankApp.localbankapp.service.UserDetailsService;
+import com.BankApp.localbankapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
@@ -39,11 +41,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         existing.setUsername(updatedUser.getUsername());
         existing.setPassword(updatedUser.getPassword());
         existing.setEmail(updatedUser.getEmail());
-        // Пароль должен обновляться отдельно с хешированием
         return userRepository.save(existing);
     }
 
-    public UserDetailsImpl loadUserByUsername(String username) {
+    public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Username is already taken"));
 
@@ -52,6 +53,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                                  .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                                                  .collect(Collectors.toList());
 
-        return new UserDetailsImpl(user, authorities);
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                authorities
+        );
     }
 }

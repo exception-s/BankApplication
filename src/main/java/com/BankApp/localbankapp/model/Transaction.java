@@ -39,12 +39,14 @@ public class Transaction {
     @Column(name = "description")
     private String description;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "transaction_date")
     private LocalDateTime timestamp = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "from_currency")
     private Currency fromCurrency;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "to_currency")
     private Currency toCurrency;
 }

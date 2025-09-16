@@ -3,9 +3,10 @@ spring:
     name: LocalBankApp
 
   datasource:
-    url: jdbc:postgresql://postgres:5432/local_bank_db
+    url: jdbc:postgresql://postgres:5432/localbank_db
     username: postgres
-    password: password
+    password: pass
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -14,6 +15,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   h2:
     console:
@@ -34,5 +36,5 @@ logging:
     name: bankapp.log
 
 app:
-  jwtSecret: my-very-secret-key-12345
+  jwtSecret: my-very_secret-key_12345more_secret_than_ever
   jwtExpirationMs: 86400000
