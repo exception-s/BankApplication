@@ -1,11 +1,16 @@
 package com.BankApp.localbankapp.util;
 
+import com.BankApp.localbankapp.exception.CurrencyConversionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.*;
-
+import org.xml.sax.SAXException;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
@@ -38,17 +43,21 @@ public class CurrencyConverter {
             BigDecimal result = toCurrency.equalsIgnoreCase("RUB") ? inRubles : inRubles.divide(rubToTo, 2, RoundingMode.HALF_UP);
             return result.setScale(3, RoundingMode.HALF_UP);
 
-        } catch (Exception e) {
+        } catch (ParserConfigurationException | IOException | SAXException e) {
             log.error("Currency conversion failed: {}", e.getMessage());
-            throw new RuntimeException("Failed to fetch exchange rates", e);
+            throw new CurrencyConversionException("Failed to fetch exchange rates", e);
         }
     }
 
-    private Map<String, BigDecimal> parseXmlRates(String xml) throws Exception {
+    private Map<String, BigDecimal> parseXmlRates(String xml) throws ParserConfigurationException, IOException, SAXException {
         Map<String, BigDecimal> rates = new HashMap<>();
-        Document doc = DocumentBuilderFactory.newInstance()
-                                             .newDocumentBuilder()
-                                             .parse(new java.io.ByteArrayInputStream(xml.getBytes()));
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        Document doc = factory
+                .newDocumentBuilder()
+                .parse(new ByteArrayInputStream(xml.getBytes()));
 
         NodeList valutes = doc.getElementsByTagName("Valute");
 

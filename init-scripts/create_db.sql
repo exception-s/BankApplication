@@ -1,5 +1,3 @@
-CREATE DATABASE localbank_db;
-\c localbank_db;
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,

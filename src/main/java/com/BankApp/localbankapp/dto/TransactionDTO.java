@@ -4,8 +4,6 @@ import com.BankApp.localbankapp.model.Currency;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-
 import java.math.BigDecimal;
 
 /**

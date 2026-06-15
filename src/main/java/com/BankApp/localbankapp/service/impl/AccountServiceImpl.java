@@ -12,9 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
-import java.util.Objects;
+import com.BankApp.localbankapp.util.SecurityUtils;
 
 /**
  * @author Alexander Brazhkin
@@ -40,14 +39,17 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional(readOnly = true)
     public BankAccount getAccountById(Long id) {
-        return accountRepository.findById(id)
+        BankAccount account = accountRepository.findById(id)
                 .orElseThrow(() -> new EmptyResultDataAccessException("Account not found with id: " + id, 1));
+        SecurityUtils.verifyAccountOwnership(account);
+        return account;
     }
 
     @Transactional(readOnly = true)
     public BigDecimal getBalanceById(Long id) {
         BankAccount account = accountRepository.findById(id)
                 .orElseThrow(() -> new EmptyResultDataAccessException("Account not found with id: " + id, 1));
+        SecurityUtils.verifyAccountOwnership(account);
         return account.getBalance();
     }
 

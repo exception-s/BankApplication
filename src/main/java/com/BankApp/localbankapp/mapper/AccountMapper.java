@@ -13,6 +13,9 @@ import java.math.BigDecimal;
  */
 @Component
 public class AccountMapper {
+
+    private AccountMapper() {}
+
     public static BankAccount toEntity(AccountDTO dto, User user, String generatedAccountNumber) {
         BankAccount account = new BankAccount();
         account.setUser(user);

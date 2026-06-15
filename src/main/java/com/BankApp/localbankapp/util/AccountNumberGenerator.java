@@ -6,6 +6,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Alexander Brazhkin
  */
 public class AccountNumberGenerator {
+
+    private AccountNumberGenerator() {}
+
     private static final AtomicLong sequence = new AtomicLong(10000000);
     private static final String BANK_CODE = "LBA";
 

@@ -5,12 +5,8 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Alexander Brazhkin
@@ -18,7 +14,7 @@ import java.util.stream.Collectors;
 public class UserDetailsImpl implements UserDetails {
 
     @Getter
-    private final User user;
+    private final transient User user;
     private final List<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(User user) {
@@ -26,7 +22,7 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = user.getRoles()
                                .stream()
                                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
-                               .collect(Collectors.toList());
+                               .toList();
     }
 
     public UserDetailsImpl(User user, List<GrantedAuthority> authorities) {

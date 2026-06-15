@@ -1,4 +1,4 @@
-\c localbank_db;
+\c localbank;
 
 INSERT INTO users (username, password, email) VALUES
 ('alexander', '$2a$10$ExampleHash1234567890', 'alex@bank.com'),

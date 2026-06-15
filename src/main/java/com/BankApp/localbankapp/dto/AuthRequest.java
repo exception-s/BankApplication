@@ -5,12 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
+
 
 /**
  * @author Alexander Brazhkin
  */
-
 @Data
 @AllArgsConstructor
 public class AuthRequest {

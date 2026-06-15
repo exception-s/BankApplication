@@ -20,7 +20,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.http.*;
 import java.math.BigDecimal;
-
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -56,8 +60,16 @@ class LocalBankApplicationTest {
 		registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
 	}
 
+	@Autowired
+	private com.BankApp.localbankapp.repository.TransactionRepository transactionRepository;
+
+	@Autowired
+	private com.BankApp.localbankapp.repository.AccountRepository accountRepository;
+
 	@BeforeEach
 	void setUp() {
+		transactionRepository.deleteAll();
+		accountRepository.deleteAll();
 		userRepository.deleteAll();
 	}
 
@@ -135,5 +147,89 @@ class LocalBankApplicationTest {
 						.header("Authorization", "Bearer " + token))
 				.andExpect(status().isOk())
 				.andExpect(content().string("500.00"));
+	}
+
+	@Test
+	void concurrentWithdrawalScenario() throws Exception {
+		User newUser = new User();
+		newUser.setUsername("concurrentUser");
+		newUser.setPassword("password123");
+		newUser.setEmail("concurrent@test.com");
+
+		mockMvc.perform(post("/api/auth/register")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(newUser)))
+				.andExpect(status().isOk());
+
+		MvcResult authResult = mockMvc.perform(post("/api/auth/authenticate")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{"username":"concurrentUser","password":"password123"}
+								"""))
+				.andExpect(status().isOk())
+				.andReturn();
+
+		String token = authResult.getResponse().getContentAsString();
+
+		MvcResult accountResult = mockMvc.perform(post("/api/accounts")
+						.header("Authorization", "Bearer " + token)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content("""
+								{"userId":"1","currency":"USD"}
+								"""))
+				.andExpect(status().isCreated())
+				.andReturn();
+
+		JsonNode accountNode = objectMapper.readTree(accountResult.getResponse().getContentAsString());
+		long accountId = accountNode.get("id").asLong();
+
+		TransactionDTO deposit = new TransactionDTO(null, accountId, BigDecimal.valueOf(100.00), Currency.USD, Currency.USD);
+		mockMvc.perform(post("/api/transactions/deposit")
+						.header("Authorization", "Bearer " + token)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(deposit)))
+				.andExpect(status().isOk());
+
+		int numberOfThreads = 10;
+		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+		CountDownLatch readyLatch = new CountDownLatch(numberOfThreads);
+		CountDownLatch startLatch = new CountDownLatch(1);
+		CountDownLatch doneLatch = new CountDownLatch(numberOfThreads);
+		AtomicInteger successCount = new AtomicInteger(0);
+
+		TransactionDTO withdraw = new TransactionDTO(accountId, null, BigDecimal.valueOf(100.00), Currency.USD, Currency.USD);
+		String withdrawJson = objectMapper.writeValueAsString(withdraw);
+
+		for (int i = 0; i < numberOfThreads; i++) {
+			executorService.submit(() -> {
+				try {
+					readyLatch.countDown();
+					startLatch.await();
+					MvcResult result = mockMvc.perform(post("/api/transactions/withdraw")
+									.header("Authorization", "Bearer " + token)
+									.contentType(MediaType.APPLICATION_JSON)
+									.content(withdrawJson))
+							.andReturn();
+					if (result.getResponse().getStatus() == HttpStatus.OK.value()) {
+						successCount.incrementAndGet();
+					}
+				} catch (Exception e) {
+					// handle error
+				} finally {
+					doneLatch.countDown();
+				}
+			});
+		}
+
+		readyLatch.await();
+		startLatch.countDown(); // start all threads simultaneously
+		doneLatch.await();
+
+		assertEquals(1, successCount.get(), "Only one withdrawal should succeed");
+
+		mockMvc.perform(get("/api/accounts/" + accountId + "/balance")
+						.header("Authorization", "Bearer " + token))
+				.andExpect(status().isOk())
+				.andExpect(content().string("0.00"));
 	}
 }

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import com.BankApp.localbankapp.util.SecurityUtils;
 
 /**
  * @author Alexander Brazhkin
@@ -35,9 +36,10 @@ public class TransactionServiceImpl implements TransactionService {
         }
         long fromId = dto.getFromAccountId();
         long toId = dto.getToAccountId();
-        BankAccount fromAccount = accountRepository.findById(fromId)
+        BankAccount fromAccount = accountRepository.findByIdForUpdate(fromId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Source account not found"));
-        BankAccount toAccount = accountRepository.findById(toId)
+        SecurityUtils.verifyAccountOwnership(fromAccount);
+        BankAccount toAccount = accountRepository.findByIdForUpdate(toId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Target account not found"));
 
         Currency fromCurrency = dto.getFromCurrency() != null ? dto.getFromCurrency() : fromAccount.getCurrency();
@@ -86,8 +88,9 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction deposit(TransactionDTO dto) {
         long toId = dto.getToAccountId();
         BigDecimal amount = dto.getAmount();
-        BankAccount depositAccount = accountRepository.findById(toId)
+        BankAccount depositAccount = accountRepository.findByIdForUpdate(toId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Deposit account is not found"));
+        SecurityUtils.verifyAccountOwnership(depositAccount);
         Currency toCurrency = dto.getToCurrency() != null ? dto.getToCurrency() : depositAccount.getCurrency();
 
         if (!toCurrency.equals(depositAccount.getCurrency())) {
@@ -112,8 +115,9 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction withdrawal(TransactionDTO dto) {
         long fromId = dto.getFromAccountId();
         BigDecimal amount = dto.getAmount();
-        BankAccount withdrawalAccount = accountRepository.findById(fromId)
+        BankAccount withdrawalAccount = accountRepository.findByIdForUpdate(fromId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Withdrawal account is not found"));
+        SecurityUtils.verifyAccountOwnership(withdrawalAccount);
 
         Currency fromCurrency = dto.getFromCurrency() != null ? dto.getFromCurrency() : withdrawalAccount.getCurrency();
         if (!fromCurrency.equals(withdrawalAccount.getCurrency())) {

@@ -12,6 +12,9 @@ import java.util.Collections;
  */
 @Component
 public class UserMapper {
+
+    private UserMapper() {}
+
     public static User toEntity(AuthRequest request, String encodedPassword) {
         User user = new User();
         user.setUsername(request.getUsername());

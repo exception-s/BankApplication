@@ -3,16 +3,15 @@ package com.BankApp.localbankapp.service.impl;
 import com.BankApp.localbankapp.model.User;
 import com.BankApp.localbankapp.repository.UserRepository;
 import com.BankApp.localbankapp.service.UserService;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +22,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+
+    @Resource
+    private final UserServiceImpl userService;
 
     @Transactional(readOnly = true)
     public User getUserById(Long id) {
@@ -37,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public User updateUser(Long id, User updatedUser) {
-        User existing = getUserById(id);
+        User existing = userService.getUserById(id);
         existing.setUsername(updatedUser.getUsername());
         existing.setPassword(updatedUser.getPassword());
         existing.setEmail(updatedUser.getEmail());
@@ -46,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username is already taken"));
+                .orElseThrow(() -> new BadCredentialsException("Invalid username"));
 
         List<GrantedAuthority> authorities = user.getRoles()
                                                  .stream()

@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
  */
 @Component
 public class TransactionMapper {
+
+    private TransactionMapper() {}
+
     public static Transaction toEntity(TransactionDTO dto,
                                        BankAccount from,
                                        BankAccount to,
