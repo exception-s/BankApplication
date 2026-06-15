@@ -3,6 +3,8 @@ package com.bankapp.localbankapp.integration;
 import com.BankApp.localbankapp.dto.TransactionDTO;
 import com.BankApp.localbankapp.model.Currency;
 import com.BankApp.localbankapp.model.User;
+import com.BankApp.localbankapp.repository.AccountRepository;
+import com.BankApp.localbankapp.repository.TransactionRepository;
 import com.BankApp.localbankapp.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,10 +63,10 @@ class LocalBankApplicationTest {
 	}
 
 	@Autowired
-	private com.BankApp.localbankapp.repository.TransactionRepository transactionRepository;
+	private TransactionRepository transactionRepository;
 
 	@Autowired
-	private com.BankApp.localbankapp.repository.AccountRepository accountRepository;
+	private AccountRepository accountRepository;
 
 	@BeforeEach
 	void setUp() {

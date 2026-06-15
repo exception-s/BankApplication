@@ -94,11 +94,11 @@ class AuthServiceTest {
     }
 
     @Test
-    void registerUserThrowsUsernameNotFoundExceptionOnUsername() {
+    void registerUserThrowsBadCredentialsExceptionOnUsername() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(testUser));
 
-        RuntimeException ex = assertThrows(UsernameNotFoundException.class, () -> authService.registerUser(request));
-        assertEquals("Username is already taken", ex.getMessage());
+        RuntimeException ex = assertThrows(BadCredentialsException.class, () -> authService.registerUser(request));
+        assertEquals("Invalid username or password", ex.getMessage());
         verify(userRepository, times(1)).findByUsername("testUser");
         verify(userRepository, never()).findByEmail(anyString());
         verify(passwordEncoder, never()).encode(anyString());

@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS bank_accounts (
 CREATE TABLE IF NOT EXISTS transactions (
     id SERIAL PRIMARY KEY,
     from_account_id INT,
-    to_account_id INT NOT NULL,
+    to_account_id INT,
     amount DECIMAL(15,2) NOT NULL,
     type VARCHAR(20) NOT NULL,
     from_currency VARCHAR,

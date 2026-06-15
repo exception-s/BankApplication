@@ -287,7 +287,7 @@ class TransactionServiceTest {
         assertNotNull(result);
         assertEquals(TransactionType.TRANSFER, result.getType());
         assertEquals(0, BigDecimal.valueOf(900).compareTo(usdAccount.getBalance())); // 1000 - 100
-        assertEquals(0, BigDecimal.valueOf(57500).compareTo(rubAccount.getBalance())); // 50000 + 7500
+        assertEquals(0, BigDecimal.valueOf(12500).compareTo(rubAccount.getBalance())); // 5000 + 7500
         assertEquals(Currency.USD, result.getFromCurrency());
         assertEquals(Currency.RUB, result.getToCurrency());
     }

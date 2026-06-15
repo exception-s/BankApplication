@@ -23,10 +23,6 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
-    @Resource
-    private final UserServiceImpl userService;
-
-    @Transactional(readOnly = true)
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new EmptyResultDataAccessException("User not found with id: " + id, 1));
@@ -39,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public User updateUser(Long id, User updatedUser) {
-        User existing = userService.getUserById(id);
+        User existing = getUserById(id);
         existing.setUsername(updatedUser.getUsername());
         existing.setPassword(updatedUser.getPassword());
         existing.setEmail(updatedUser.getEmail());
